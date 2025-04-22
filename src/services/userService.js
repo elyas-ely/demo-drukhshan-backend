@@ -98,7 +98,7 @@ const createUserFn = async (userData) => {
     address = null,
     whatsapp = null,
     x = null,
-    seller = false,
+    seller = true,
   } = userData
 
   const connection = await client.connect()
