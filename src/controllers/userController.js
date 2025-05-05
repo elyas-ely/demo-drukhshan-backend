@@ -145,7 +145,7 @@ const updateUser = async (c) => {
 // =======================================
 const updateViewedUsers = async (c) => {
   const { otherId } = c.req.param()
-  const { userId } = await c.req.json()
+  const { userId } = await c.req.query()
 
   if (!userId || !otherId) {
     return c.json({ error: 'User ID and Other ID are required' }, 400)
