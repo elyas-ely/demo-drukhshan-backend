@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/index.ts": {
+    "src/index.ts": {
       "runtime": "edge"
     }
   },
