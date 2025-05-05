@@ -13,168 +13,183 @@ import { logger } from '../utils/logger.js'
 // =======================================
 // ============= GET ALL USERS ===========
 // =======================================
-const getAllUsers = async (req, res) => {
-  const searchTerm = req.query?.searchTerm || ''
-  const page = parseInt(req.query?.page) || 1
+const getAllUsers = async (c) => {
+  const { searchTerm = '', city = '', page = '1' } = c.req.query()
   const limit = 15
-  const offset = (page - 1) * limit
+  const offset = (parseInt(page) - 1) * limit
+
+  if (!searchTerm) {
+    return c.json({ error: 'Search term is required' }, 400)
+  }
 
   try {
-    const users = await getAllUsersFn(searchTerm, limit, offset)
+    const users = await getAllUsersFn(searchTerm, city, limit, offset)
 
-    res.status(200).json({
+    return c.json({
       users,
-      nextPage: users.length === limit ? page + 1 : null,
+      nextPage: users.length === limit ? parseInt(page) + 1 : null,
     })
   } catch (err) {
     console.error('Error in getAllUsers:', err)
-    res.status(500).json({ error: 'Failed to retrieve users' })
+    return c.json({ error: 'Failed to retrieve users' }, 500)
   }
 }
 
 // =======================================
 // ============= GET SEARCH USERS ===========
 // =======================================
-const getSearchUsers = async (req, res) => {
-  const searchTerm = req.query?.searchTerm
+const getSearchUsers = async (c) => {
+  const { searchTerm } = c.req.query()
+
+  if (!searchTerm) {
+    return c.json({ error: 'Search term is required' }, 400)
+  }
+
   try {
     const users = await getSearchUsersFn(searchTerm)
     if (users.length === 0) {
-      return res.status(404).json({ message: 'No users found' })
+      return c.json({ message: 'No users found' }, 404)
     }
-    res.status(200).json(users)
+    return c.json(users)
   } catch (err) {
-    console.error('Error in getAllUsers:', err)
-    res.status(500).json({ error: 'Failed to retrieve users' })
+    console.error('Error in getSearchUsers:', err)
+    return c.json({ error: 'Failed to retrieve users' }, 500)
   }
 }
 
 // =======================================
 // ============ GET USER BY ID ===========
 // =======================================
-const getUserById = async (req, res) => {
-  const userId = req.params?.userId
+const getUserById = async (c) => {
+  const { userId } = c.req.param()
+
+  if (!userId) {
+    return c.json({ error: 'User ID is required' }, 400)
+  }
 
   try {
     const user = await getUserByIdFn(userId)
     if (!user) {
-      return res.status(404).json({ message: 'User not found in database' })
+      return c.json({ message: 'User not found' }, 404)
     }
-    res.status(200).json(user)
+    return c.json(user)
   } catch (err) {
     console.error('Error in getUserById:', err)
-    res.status(500).json({ error: 'Failed to retrieve user' })
+    return c.json({ error: 'Failed to retrieve user' }, 500)
   }
 }
 
 // =======================================
 // ============ GET VIEWED USERS ===========
 // =======================================
-const getViewedUsers = async (req, res) => {
-  const userId = req.params?.userId
+const getViewedUsers = async (c) => {
+  const { userId } = c.req.param()
+
+  if (!userId) {
+    return c.json({ error: 'User ID is required' }, 400)
+  }
 
   try {
-    const user = await getViewedUsersFn(userId)
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' })
+    const users = await getViewedUsersFn(userId)
+    if (!users.length) {
+      return c.json({ message: 'No viewed users found' }, 404)
     }
-    res.status(200).json(user)
+    return c.json(users)
   } catch (err) {
     console.error('Error in getViewedUsers:', err)
-    res.status(500).json({ error: 'Failed to retrieve user (getViewedUsers)' })
+    return c.json({ error: 'Failed to retrieve viewed users' }, 500)
   }
 }
 
 // =======================================
 // ============= CREATE USER =============
 // =======================================
-const createUser = async (req, res) => {
-  const userData = req.body
-
+const createUser = async (c) => {
+  const userData = await c.req.json()
   try {
-    await createUserFn(userData)
-    res.status(201).json({ message: 'User created successfully' })
+    const newUser = await createUserFn(userData)
+    return c.json(newUser, 201)
   } catch (err) {
     console.error('Error in createUser:', err)
-    if (err.code === '23505') {
-      return res
-        .status(400)
-        .json({ error: 'User with this email already exists, try another one' })
-    }
-    res.status(500).json({ error: 'Failed to create user' })
+    return c.json({ error: 'Failed to create user' }, 500)
   }
 }
 
 // =======================================
 // ============= UPDATE USER =============
 // =======================================
-const updateUser = async (req, res) => {
-  const userId = req.params?.userId
-  const userData = req.body
+const updateUser = async (c) => {
+  const { userId } = c.req.param()
+  const userData = await c.req.json()
 
-  if (!userId) throw new Error('User ID is required')
+  if (!userId) {
+    return c.json({ error: 'User ID is required' }, 400)
+  }
 
   try {
-    await updateUserFn(userId, userData)
-    res.status(200).json({ message: 'User updated successfully' })
+    const updatedUser = await updateUserFn(userId, userData)
+    if (!updatedUser) {
+      return c.json({ message: 'User not found' }, 404)
+    }
+    return c.json(updatedUser)
   } catch (err) {
     console.error('Error in updateUser:', err)
-    res.status(500).json({ error: 'Failed to update user' })
+    return c.json({ error: 'Failed to update user' }, 500)
   }
 }
 
 // =======================================
 // ============== UPDATE VIEWED USERS =======
 // =======================================
-const updateViewedUsers = async (req, res) => {
-  const userId = req.query?.userId
-  const otherId = req.params?.otherId
+const updateViewedUsers = async (c) => {
+  const { otherId } = c.req.param()
+  const { userId } = await c.req.json()
 
   if (!userId || !otherId) {
-    return res
-      .status(400)
-      .json({ error: 'Post ID and User ID are required (updateViewedUsers)' })
+    return c.json({ error: 'User ID and Other ID are required' }, 400)
   }
 
   try {
-    const post = await updateViewedUsersFn(userId, otherId)
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' })
+    const result = await updateViewedUsersFn(userId, otherId)
+    if (!result) {
+      return c.json({ message: 'Failed to update viewed users' }, 400)
     }
-    res.status(200).json({ message: 'User viewd updated susccesfully ' })
+    return c.json({ message: 'Viewed users updated successfully' })
   } catch (err) {
     console.error('Error in updateViewedUsers:', err)
-    res
-      .status(500)
-      .json({ error: 'Failed to retrieve post (updateViewedUsers)' })
+    return c.json({ error: 'Failed to update viewed users' }, 500)
   }
 }
 
 // =======================================
 // ============= DELETE USER =============
 // =======================================
-const deleteUser = async (req, res) => {
-  const userId = req.params.userId
+const deleteUser = async (c) => {
+  const { userId } = c.req.param()
 
-  if (!userId) throw new Error('User ID is required')
+  if (!userId) {
+    return c.json({ error: 'User ID is required' }, 400)
+  }
 
   try {
-    await deleteUserFn(userId)
-    logger.warning('User deleted successfully')
-    res.status(204).send()
+    const result = await deleteUserFn(userId)
+    if (!result) {
+      return c.json({ message: 'User not found' }, 404)
+    }
+    return c.json({ message: 'User deleted successfully' })
   } catch (err) {
     console.error('Error in deleteUser:', err)
-    res.status(500).json({ error: 'Failed to delete user' })
+    return c.json({ error: 'Failed to delete user' }, 500)
   }
 }
 
 export {
   getAllUsers,
   getSearchUsers,
+  getUserById,
   getViewedUsers,
   createUser,
-  getUserById,
   updateUser,
-  updateViewedUsers,
   deleteUser,
+  updateViewedUsers,
 }

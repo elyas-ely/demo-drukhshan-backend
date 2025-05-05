@@ -4,42 +4,35 @@ import {
 } from '../services/otherService.js'
 
 // =======================================
-// ============== GET ALL BANNAERS =======
+// ============== GET ALL BANNERS =======
 // =======================================
-const getAllBanners = async (req, res) => {
+const getAllBanners = async (c) => {
   try {
     const banners = await getAllBannersFn()
     if (!banners) {
-      return res
-        .status(404)
-        .json({ message: 'banners not found (getAllBannersFn)' })
+      return c.json({ message: 'banners not found' }, 404)
     }
-    res.status(200).json(banners)
+    return c.json(banners)
   } catch (err) {
-    console.error('Error in getAllBannersFn:', err)
-    res
-      .status(500)
-      .json({ error: 'Failed to retrieve banners (getAllBannersFn)' })
+    console.error('Error in getAllBanners:', err)
+    return c.json({ error: 'Failed to retrieve banners' }, 500)
   }
 }
 
 // =======================================
 // ============== GET ALL NOTIFICATIONS =======
 // =======================================
-const getAllNotifications = async (req, res) => {
+const getAllNotifications = async (c) => {
   try {
-    const notificaitons = await getAllNotificationsFn()
-    if (!notificaitons) {
-      return res
-        .status(404)
-        .json({ message: 'notificaitons not found (getAllNotificationsFn)' })
+    const notifications = await getAllNotificationsFn()
+    if (!notifications) {
+      return c.json({ message: 'notifications not found' }, 404)
     }
-    res.status(200).json(notificaitons)
+    return c.json(notifications)
   } catch (err) {
-    console.error('Error in getAllNotificationsFn:', err)
-    res.status(500).json({
-      error: 'Failed to retrieve notificaitons (getAllNotificationsFn)',
-    })
+    console.error('Error in getAllNotifications:', err)
+    return c.json({ error: 'Failed to retrieve notifications' }, 500)
   }
 }
+
 export { getAllBanners, getAllNotifications }

@@ -136,6 +136,7 @@ const getFilteredPostFn = async (filters, userId, limit, offset) => {
       maxPrice: (value) => `price <= $${queryParams.push(value)}`,
       side: (value) => `side = $${queryParams.push(value)}`,
       transmission: (value) => `transmission = $${queryParams.push(value)}`,
+      city: (value) => `u.city = $${queryParams.push(value)}`, // Add city filter
     }
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -150,11 +151,12 @@ const getFilteredPostFn = async (filters, userId, limit, offset) => {
     }
 
     const query = `
-      SELECT *,
+      SELECT posts.*,
         (SELECT COUNT(*)::int FROM likes l WHERE l.post_id = posts.id) AS likes_count,
         EXISTS (SELECT 1 FROM likes l WHERE l.user_id = $1 AND l.post_id = posts.id)::BOOLEAN AS like_status,
         EXISTS (SELECT 1 FROM saves s WHERE s.user_id = $1 AND s.post_id = posts.id)::BOOLEAN AS save_status
       FROM posts
+      JOIN users u ON posts.user_id = u.user_id
       WHERE ${queryParts.join(' AND ')}
       ORDER BY car_name ASC, created_at DESC
       LIMIT $${queryParams.push(limit)} OFFSET $${queryParams.push(offset)};
@@ -460,19 +462,77 @@ const deletePostFn = async (postId) => {
   }
 }
 
+// =======================================
+// ============== LIKE POST =============
+// =======================================
+const likePostFn = async (postId, userId) => {
+  const query = `
+    INSERT INTO likes (post_id, user_id)
+    VALUES ($1, $2)
+    ON CONFLICT (post_id, user_id) DO NOTHING
+    RETURNING *
+  `
+  const result = await executeQuery(query, [postId, userId])
+  return result.length > 0
+}
+
+// =======================================
+// ============== UNLIKE POST ===========
+// =======================================
+const unlikePostFn = async (postId, userId) => {
+  const query = `
+    DELETE FROM likes
+    WHERE post_id = $1 AND user_id = $2
+    RETURNING *
+  `
+  const result = await executeQuery(query, [postId, userId])
+  return result.length > 0
+}
+
+// =======================================
+// ============== COMMENT POST ==========
+// =======================================
+const commentPostFn = async (postId, commentData) => {
+  const { userId, content } = commentData
+  const query = `
+    INSERT INTO comments (post_id, user_id, content)
+    VALUES ($1, $2, $3)
+    RETURNING *
+  `
+  const result = await executeQuery(query, [postId, userId, content])
+  return result.length > 0
+}
+
+// =======================================
+// ============= UNCOMMENT POST =========
+// =======================================
+const uncommentPostFn = async (postId, commentId, userId) => {
+  const query = `
+    DELETE FROM comments
+    WHERE id = $1 AND post_id = $2 AND user_id = $3
+    RETURNING *
+  `
+  const result = await executeQuery(query, [commentId, postId, userId])
+  return result.length > 0
+}
+
 export {
   getAllPostsFn,
-  getPopularPostsFn,
   getPostByIdFn,
-  getSavedPostFn,
-  getViewedPostFn,
-  getSearchPostsFn,
-  getFilteredPostFn,
   getPostsByUserIdFn,
   createPostFn,
   updatePostFn,
+  deletePostFn,
+  getSearchPostsFn,
+  likePostFn,
+  unlikePostFn,
+  commentPostFn,
+  uncommentPostFn,
+  getPopularPostsFn,
+  getFilteredPostFn,
+  getSavedPostFn,
+  getViewedPostFn,
   updateSaveFn,
   updateLikeFn,
-  updateViewedPostsFn,
-  deletePostFn,
+  updateViewedPostsFn
 }

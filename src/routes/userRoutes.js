@@ -1,4 +1,4 @@
-import express from 'express'
+import { Hono } from 'hono'
 import {
   getAllUsers,
   getSearchUsers,
@@ -10,7 +10,7 @@ import {
   updateViewedUsers,
 } from '../controllers/userController.js'
 
-const router = express.Router()
+const router = new Hono()
 
 // =======================================
 // ============== GET ROUTES =============

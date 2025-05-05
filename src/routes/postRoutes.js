@@ -1,52 +1,45 @@
-import express from 'express'
-
+import { Hono } from 'hono'
 import {
   getAllPosts,
-  getPopularPosts,
-  getPostById,
-  getSavesPost,
-  getViewedPost,
-  getFilteredPost,
-  getPostsByUserId,
   getSearchPosts,
+  getPostById,
+  getPostsByUserId,
   createPost,
   updatePost,
   deletePost,
-  updateSave,
-  updateLike,
-  updateViewedPosts,
+  likePost,
+  unlikePost,
+  commentPost,
+  uncommentPost
 } from '../controllers/postController.js'
 
-const router = express.Router()
+const router = new Hono()
 
 // =======================================
 // ============== GET ROUTES =============
 // =======================================
 router.get('/', getAllPosts)
-router.get('/popular', getPopularPosts)
 router.get('/search', getSearchPosts)
-router.get('/filtered', getFilteredPost)
-router.get('/saves/:userId', getSavesPost)
-router.get('/viewed/:userId', getViewedPost)
-router.get('/user/:userId', getPostsByUserId)
 router.get('/:postId', getPostById)
+router.get('/user/:userId', getPostsByUserId)
 
 // =======================================
 // ============== POST ROUTES ============
 // =======================================
 router.post('/', createPost)
+router.post('/:postId/like', likePost)
+router.post('/:postId/comment', commentPost)
 
 // =======================================
 // ============== PUT ROUTES =============
 // =======================================
 router.put('/:postId', updatePost)
-router.put('/saves/:postId', updateSave)
-router.put('/likes/:postId', updateLike)
-router.put('/viewed/:postId', updateViewedPosts)
 
 // =======================================
 // ============== DELETE ROUTES ==========
 // =======================================
 router.delete('/:postId', deletePost)
+router.delete('/:postId/like', unlikePost)
+router.delete('/:postId/comment/:commentId', uncommentPost)
 
 export default router
