@@ -1,18 +1,18 @@
 import { Hono } from 'hono'
 import {
   getAllPosts,
-  getSearchPosts,
+  getPopularPosts,
   getPostById,
+  getSavesPost,
+  getViewedPost,
+  getFilteredPost,
   getPostsByUserId,
+  getSearchPosts,
   createPost,
   updatePost,
   deletePost,
-  updateLike,
-  getPopularPosts,
-  getFilteredPost,
-  getSavesPost,
-  getViewedPost,
   updateSave,
+  updateLike,
   updateViewedPosts,
 } from '../controllers/postController.js'
 

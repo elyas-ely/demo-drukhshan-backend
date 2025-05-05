@@ -9,6 +9,9 @@ import {
   getPopularPostsFn,
   updateLikeFn,
   updateSaveFn,
+  getSavedPostFn,
+  getViewedPostFn,
+  getFilteredPostFn,
 } from '../services/postService.js'
 import { logger } from '../utils/logger.js'
 
