@@ -12,6 +12,7 @@ import {
   getSavedPostFn,
   getViewedPostFn,
   getFilteredPostFn,
+  updateViewedPostsFn,
 } from '../services/postService.js'
 import { logger } from '../utils/logger.js'
 
