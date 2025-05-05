@@ -184,7 +184,8 @@ export const getPostsByUserId = async (c) => {
 // ========= GET POSTS BY USER ID ========
 // =======================================
 export const getFilteredPost = async (c) => {
-  const { userId, filters, page = '1' } = c.req.query()
+  const { userId, page = '1' } = c.req.query()
+  const filters = c.req.query()
   const limit = 12
   const offset = (parseInt(page) - 1) * limit
 
