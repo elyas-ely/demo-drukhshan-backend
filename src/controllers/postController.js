@@ -214,9 +214,9 @@ export const getFilteredPost = async (c) => {
 // ============== CREATE POST ============
 // =======================================
 export const createPost = async (c) => {
-  const postData = await c.req.json()
+  const body = await c.req.raw.json()
   try {
-    const newPost = await createPostFn(postData)
+    const newPost = await createPostFn(body)
     if (!newPost) {
       return c.json({ error: 'Failed to create post' }, 400)
     }
@@ -232,14 +232,19 @@ export const createPost = async (c) => {
 // =======================================
 export const updatePost = async (c) => {
   const { postId } = c.req.param()
-  const updateData = await c.req.json()
+  const text = await c.req.text()
+  const body = text ? JSON.parse(text) : {}
 
   if (!postId) {
     return c.json({ error: 'Post ID is required' }, 400)
   }
 
+  if (!body || Object.keys(body).length === 0) {
+    return c.json({ error: 'No update data provided' }, 400)
+  }
+
   try {
-    const updatedPost = await updatePostFn(postId, updateData)
+    const updatedPost = await updatePostFn(postId, body)
     if (!updatedPost) {
       return c.json({ message: 'Post not found' }, 404)
     }
