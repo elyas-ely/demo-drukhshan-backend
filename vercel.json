@@ -1,15 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "src/index.js",
-      "use": "@vercel/bun"
+  "functions": {
+    "api/index.ts": {
+      "runtime": "edge"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/index.js"
+      "dest": "src/index.ts"
     }
   ]
 }
