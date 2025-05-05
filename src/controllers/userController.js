@@ -105,7 +105,8 @@ const getViewedUsers = async (c) => {
 // ============= CREATE USER =============
 // =======================================
 const createUser = async (c) => {
-  const userData = await c.req.json()
+  const text = await c.req.text()
+  const userData = text ? JSON.parse(text) : {}
   try {
     const newUser = await createUserFn(userData)
     return c.json(newUser, 201)
@@ -120,7 +121,8 @@ const createUser = async (c) => {
 // =======================================
 const updateUser = async (c) => {
   const { userId } = c.req.param()
-  const userData = await c.req.json()
+  const text = await c.req.text()
+  const userData = text ? JSON.parse(text) : {}
 
   if (!userId) {
     return c.json({ error: 'User ID is required' }, 400)
