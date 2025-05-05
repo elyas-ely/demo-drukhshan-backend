@@ -6,17 +6,16 @@ import {
   updatePostFn,
   deletePostFn,
   getSearchPostsFn,
-  likePostFn,
-  unlikePostFn,
-  commentPostFn,
-  uncommentPostFn
+  getPopularPostsFn,
+  updateLikeFn,
+  updateSaveFn,
 } from '../services/postService.js'
 import { logger } from '../utils/logger.js'
 
 // =======================================
 // ============== GET ALL POSTS ==========
 // =======================================
-const getAllPosts = async (c) => {
+export const getAllPosts = async (c) => {
   const { userId, page = '1' } = c.req.query()
   const limit = 12
   const offset = (parseInt(page) - 1) * limit
@@ -41,7 +40,7 @@ const getAllPosts = async (c) => {
 // =======================================
 // ============== GET POPULAR POSTS ==========
 // =======================================
-const getPopularPosts = async (c) => {
+export const getPopularPosts = async (c) => {
   const { userId } = c.req.query()
 
   if (!userId) {
@@ -65,7 +64,7 @@ const getPopularPosts = async (c) => {
 // =======================================
 // ============== GET POST BY ID =========
 // =======================================
-const getPostById = async (c) => {
+export const getPostById = async (c) => {
   const { postId } = c.req.param()
   const { userId } = c.req.query()
 
@@ -88,7 +87,7 @@ const getPostById = async (c) => {
 // =======================================
 // ============== GET SAVED POST =========
 // =======================================
-const getSavesPost = async (c) => {
+export const getSavesPost = async (c) => {
   const { userId } = c.req.param()
   const { page = '1' } = c.req.query()
   const limit = 12
@@ -114,7 +113,7 @@ const getSavesPost = async (c) => {
 // =======================================
 // ============== GET VIEWED POST =========
 // =======================================
-const getViewedPost = async (c) => {
+export const getViewedPost = async (c) => {
   const { userId } = c.req.param()
 
   if (!userId) {
@@ -136,7 +135,7 @@ const getViewedPost = async (c) => {
 // =======================================
 // ============= GET SEARCH POSTS ========
 // =======================================
-const getSearchPosts = async (c) => {
+export const getSearchPosts = async (c) => {
   const { searchTerm } = c.req.query()
   try {
     const posts = await getSearchPostsFn(searchTerm)
@@ -153,7 +152,7 @@ const getSearchPosts = async (c) => {
 // =======================================
 // ========= GET POSTS BY USER ID ========
 // =======================================
-const getPostsByUserId = async (c) => {
+export const getPostsByUserId = async (c) => {
   const { userId } = c.req.param()
   const { myId, page = '1' } = c.req.query()
   const limit = 12
@@ -181,7 +180,7 @@ const getPostsByUserId = async (c) => {
 // =======================================
 // ========= GET POSTS BY USER ID ========
 // =======================================
-const getFilteredPost = async (c) => {
+export const getFilteredPost = async (c) => {
   const { userId } = c.req.query()
   const filters = c.req.query
   const { page = '1' } = c.req.query()
@@ -208,7 +207,7 @@ const getFilteredPost = async (c) => {
 // =======================================
 // ============== CREATE POST ============
 // =======================================
-const createPost = async (c) => {
+export const createPost = async (c) => {
   const postData = await c.req.json()
   try {
     const newPost = await createPostFn(postData)
@@ -225,7 +224,7 @@ const createPost = async (c) => {
 // =======================================
 // ============== UPDATE POST ============
 // =======================================
-const updatePost = async (c) => {
+export const updatePost = async (c) => {
   const { postId } = c.req.param()
   const updateData = await c.req.json()
 
@@ -244,7 +243,7 @@ const updatePost = async (c) => {
 // =======================================
 // ============== UPDATE SAVE POST =======
 // =======================================
-const updateSave = async (c) => {
+export const updateSave = async (c) => {
   const { userId } = c.req.query()
   const { postId } = c.req.param()
 
@@ -267,7 +266,7 @@ const updateSave = async (c) => {
 // =======================================
 // ============== UPDATE LIKE POST =======
 // =======================================
-const updateLike = async (c) => {
+export const updateLike = async (c) => {
   const { userId } = c.req.query()
   const { postId } = c.req.param()
 
@@ -290,7 +289,7 @@ const updateLike = async (c) => {
 // =======================================
 // ============== UPDATE VIEWED POST =======
 // =======================================
-const updateViewedPosts = async (c) => {
+export const updateViewedPosts = async (c) => {
   const { userId } = c.req.query()
   const { postId } = c.req.param()
 
@@ -313,7 +312,7 @@ const updateViewedPosts = async (c) => {
 // =======================================
 // ============== DELETE POST ============
 // =======================================
-const deletePost = async (c) => {
+export const deletePost = async (c) => {
   const { postId } = c.req.param()
   const { userId } = c.req.query()
 
@@ -333,16 +332,16 @@ const deletePost = async (c) => {
   }
 }
 
-export {
-  getAllPosts,
-  getSearchPosts,
-  getPostById,
-  getPostsByUserId,
-  createPost,
-  updatePost,
-  deletePost,
-  likePostFn as likePost,
-  unlikePostFn as unlikePost,
-  commentPostFn as commentPost,
-  uncommentPostFn as uncommentPost
-}
+// export {
+//   getAllPosts,
+//   getPopularPosts,
+//   getSearchPosts,
+//   getPostById,
+//   getPostsByUserId,
+//   createPost,
+//   updatePost,
+//   updateViewedPosts,
+//   updateSave,
+//   updateLike ,
+//   deletePost,
+// }

@@ -7,10 +7,13 @@ import {
   createPost,
   updatePost,
   deletePost,
-  likePost,
-  unlikePost,
-  commentPost,
-  uncommentPost
+  updateLike,
+  getPopularPosts,
+  getFilteredPost,
+  getSavesPost,
+  getViewedPost,
+  updateSave,
+  updateViewedPosts,
 } from '../controllers/postController.js'
 
 const router = new Hono()
@@ -18,28 +21,32 @@ const router = new Hono()
 // =======================================
 // ============== GET ROUTES =============
 // =======================================
+
 router.get('/', getAllPosts)
+router.get('/popular', getPopularPosts)
 router.get('/search', getSearchPosts)
-router.get('/:postId', getPostById)
+router.get('/filtered', getFilteredPost)
+router.get('/saves/:userId', getSavesPost)
+router.get('/viewed/:userId', getViewedPost)
 router.get('/user/:userId', getPostsByUserId)
+router.get('/:postId', getPostById)
 
 // =======================================
 // ============== POST ROUTES ============
 // =======================================
 router.post('/', createPost)
-router.post('/:postId/like', likePost)
-router.post('/:postId/comment', commentPost)
 
 // =======================================
 // ============== PUT ROUTES =============
 // =======================================
 router.put('/:postId', updatePost)
+router.put('/saves/:postId', updateSave)
+router.put('/likes/:postId', updateLike)
+router.put('/viewed/:postId', updateViewedPosts)
 
 // =======================================
 // ============== DELETE ROUTES ==========
 // =======================================
 router.delete('/:postId', deletePost)
-router.delete('/:postId/like', unlikePost)
-router.delete('/:postId/comment/:commentId', uncommentPost)
 
 export default router
