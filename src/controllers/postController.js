@@ -234,6 +234,10 @@ export const updatePost = async (c) => {
   const { postId } = c.req.param()
   const updateData = await c.req.json()
 
+  if (!postId) {
+    return c.json({ error: 'Post ID is required' }, 400)
+  }
+
   try {
     const updatedPost = await updatePostFn(postId, updateData)
     if (!updatedPost) {
@@ -337,17 +341,3 @@ export const deletePost = async (c) => {
     return c.json({ error: 'Failed to delete post' }, 500)
   }
 }
-
-// export {
-//   getAllPosts,
-//   getPopularPosts,
-//   getSearchPosts,
-//   getPostById,
-//   getPostsByUserId,
-//   createPost,
-//   updatePost,
-//   updateViewedPosts,
-//   updateSave,
-//   updateLike ,
-//   deletePost,
-// }
