@@ -44,20 +44,23 @@ app.onError(errorHandler)
 
 // Not found handler
 app.notFound((c) => {
-  return c.json({
-    status: 404,
-    message: 'Not Found',
-    path: c.req.path
-  }, 404)
+  return c.json(
+    {
+      status: 404,
+      message: 'Not Found',
+      path: c.req.path,
+    },
+    404
+  )
 })
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 4000
 
 // Start the server
 const server = Bun.serve({
   fetch: app.fetch,
   port: port,
-  development: process.env.NODE_ENV !== 'production'
+  development: process.env.NODE_ENV !== 'production',
 })
 
 logger.info(`Server started on http://localhost:${port}`)
