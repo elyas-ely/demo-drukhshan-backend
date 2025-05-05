@@ -184,14 +184,15 @@ export const getPostsByUserId = async (c) => {
 // ========= GET POSTS BY USER ID ========
 // =======================================
 export const getFilteredPost = async (c) => {
-  const { userId } = c.req.query()
-  const filters = c.req.query
-  const { page = '1' } = c.req.query()
+  const { userId, filters, page = '1' } = c.req.query()
   const limit = 12
   const offset = (parseInt(page) - 1) * limit
 
   if (!filters?.car_name || !userId) {
-    return c.json({ error: 'User ID and car name are required' }, 400)
+    return c.json(
+      { error: 'User ID and car name are required (getFilteredPost) ' },
+      400
+    )
   }
 
   try {
