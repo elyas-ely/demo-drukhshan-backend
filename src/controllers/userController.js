@@ -14,7 +14,7 @@ import { logger } from '../utils/logger.js'
 // ============= GET ALL USERS ===========
 // =======================================
 const getAllUsers = async (c) => {
-  const { searchTerm = '', city = '', page = '1' } = c.req.query()
+  const { searchTerm = '', city = '', page = 1 } = c.req.query()
   const limit = 15
   const offset = (parseInt(page) - 1) * limit
 
