@@ -214,7 +214,8 @@ export const getFilteredPost = async (c) => {
 // ============== CREATE POST ============
 // =======================================
 export const createPost = async (c) => {
-  const body = await c.req.raw.json()
+  const text = await c.req.text()
+  const body = text ? JSON.parse(text) : {}
   try {
     const newPost = await createPostFn(body)
     if (!newPost) {
